@@ -56,7 +56,7 @@ void insert_edge(Node *src, Node *dest, double weight) {
         exit(1);
     }
    
-    src->close_nodes = realloc(src->close_nodes, (src->size_close_nodes + 1) * sizeof(Node *));
+    src->close_nodes =(Node **)realloc(src->close_nodes, (src->size_close_nodes + 1) * sizeof(Node *));
     if(src->close_nodes == NULL){
         exit(1);
     }
