@@ -264,31 +264,32 @@ int Dijsktra(Graph *g, Node *src, Node *dest) {
 
 //-------------------------------Functions-----------------------------------
 
-Graph * A(char *ans, int len ){
-    Graph *g=build_graph();
-    int i=1;
-    while (i<len-1){
-        if (ans[i]=='n'){
+Graph * A(char *arr, int len){
+    Graph *graph = build_graph();
+    int i = 1;
+    while (i < len-1){
+        if (arr[i]=='n'){
             i++;
             
-            Node *src = init_node(g,ans[i]);
-            insert_node(g,src);
-            if (i>=len-2){
+            Node *start = init_node(graph,arr[i]);
+            insert_node(graph,start);
+            if (i >= len-2){
                 break;
             }
             i++;
-            while(ans[i]!='n'){
-                Node *dest = init_node(g,ans[i]);
-                insert_node(g,dest);
+            while(arr[i]!='n'){
+                Node *end = init_node(graph,arr[i]);
+                insert_node(graph,end);
                 i++;
-                insert_edge(src,dest, ((ans[i])-'0'));
+                double w = (arr[i])-'0';
+                insert_edge(start,end, w);
                 i++;
             }
 
         }
     }
 
-    return g;
+    return graph;
 }
 ///////////////////////////////////////////////////////////
 void B(char ans [],Graph *graph){
