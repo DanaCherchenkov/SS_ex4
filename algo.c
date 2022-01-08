@@ -259,7 +259,7 @@ int Dijsktra(Graph *g, Node *src, Node *dest) {
 
 //-------------------------------Functions-----------------------------------
 
-Graph * A(char *arr, int len){
+Graph * build_graph_cmd(char *arr, int len){
     Graph *graph = build_graph();
     int i = 1;
     while (i < len-1){
@@ -287,8 +287,24 @@ Graph * A(char *arr, int len){
     return graph;
 }
 
+void Shortest_path(char *arr,Graph *g){
+    Node *s;
+    for (int i = 0; i < g->size_all_nodes ; ++i) {
+        if(arr[0] == g->node_ID[i]->node_num){
+            s = g->node_ID[i];
+        }
+    }
+    Node *d;
+    for (int i = 0; i < g->size_all_nodes ; ++i) {
+        if(arr[1] == g->node_ID[i]->node_num){
+            d = g->node_ID[i];
+        }
+    }
+    printf("Dijsktra shortest path: %d \n", Dijsktra(g, s, d));
+    
+}
 
-void B(char *arr,Graph *graph){
+void create_new_node(char *arr,Graph *graph){
     Node *node;
     node = (Node *) malloc(sizeof(Node));
     if(node == NULL){
@@ -353,34 +369,10 @@ void B(char *arr,Graph *graph){
 }
 
 
-void D(char *arr,Graph *g){
-    Node *temp;
-    for (int i = 0; i < g->size_all_nodes ; ++i) {
-        if(g->node_ID[i]->node_num == arr[0]){
-            temp=g->node_ID[i];
-        }
-    }
-    remove_node(g,temp);
-    free(temp);
-}
 
 
-void S(char *arr,Graph *g){
-    Node *s;
-    for (int i = 0; i < g->size_all_nodes ; ++i) {
-        if(arr[0] == g->node_ID[i]->node_num){
-            s = g->node_ID[i];
-        }
-    }
-    Node *d;
-    for (int i = 0; i < g->size_all_nodes ; ++i) {
-        if(arr[1] == g->node_ID[i]->node_num){
-            d = g->node_ID[i];
-        }
-    }
-    printf("Dijsktra shortest path: %d \n", Dijsktra(g, s, d));
-    
-}
+
+
 
 void reverse(char *arr, int size, Node *src) {
     char temp[size];
@@ -467,9 +459,19 @@ int tsp(Graph *g, char *list_of_node, int size){
 
 }
 
-
-void T(char *ans,Graph *g){
+void TSP_cmd(char *ans,Graph *g){
     printf( "TSP shortest path: %d \n", tsp(g,ans, strlen(ans)));
+}
+
+void del_node(char *arr,Graph *g){
+    Node *temp;
+    for (int i = 0; i < g->size_all_nodes ; ++i) {
+        if(g->node_ID[i]->node_num == arr[0]){
+            temp=g->node_ID[i];
+        }
+    }
+    remove_node(g,temp);
+    free(temp);
 }
 
 char* replace(char *arr , int len, int index,char *str){
@@ -537,7 +539,7 @@ int main(){
     }
 
     curr[i]='\0';
-    Graph *g=A(curr, i);
+    Graph *g=build_graph_cmd(curr, i);
     char ans[strlen(str_n)-i];
     char* p=(char*)malloc(strlen(str_n)-i + 1);
      if(p==NULL){
@@ -561,7 +563,7 @@ int main(){
              if(po==NULL){
              exit(1);
               }
-            B(replace(ans, t, 1,po), g);
+            create_new_node(replace(ans, t, 1,po), g);
             free(po);
             char* p=(char*)malloc((strlen(ans) - t - 1) + 1);
              if(p==NULL){
@@ -588,7 +590,7 @@ int main(){
             if(po==NULL){
                 exit(1);
             }
-            D(replace(ans, t, 1,po), g);
+            del_node(replace(ans, t, 1,po), g);
             free(po);
             char* p=(char*)malloc((strlen(ans) - t - 1) + 1);
              if(p==NULL){
@@ -612,7 +614,7 @@ int main(){
                 exit(1);
             }
             release_graph(g);
-            g=A(replace(ans, t, 1,po), t);
+            g=build_graph_cmd(replace(ans, t, 1,po), t);
             free(po);
             
             
@@ -638,7 +640,7 @@ int main(){
             if(po==NULL){
                 exit(1);
             }
-            S(replace(ans, t, 1,po), g);
+            Shortest_path(replace(ans, t, 1,po), g);
             free(po);
 
             char* p=(char*)malloc((strlen(ans) - t - 1) + 1);
@@ -653,7 +655,6 @@ int main(){
         if (ans[0] == 'T') {
             int t = 0;
             for (int j = 1; j < strlen(ans); j++) {
-                char c = ans[j];
                 if (ans[j] == 'B' || ans[j] == 'D' || ans[j] == 'S' || ans[j] == 'T' || ans[j] == '\0' || ans[j] == 'A') {
                     break;
                 } else {
@@ -664,7 +665,7 @@ int main(){
              if(po==NULL){
                 exit(1);
             }
-            T(replace(ans, t, 1,po), g);
+            TSP_cmd(replace(ans, t, 1,po), g);
             free(po);
             char* p=(char*)malloc((strlen(ans) - t - 1) + 1);
             if(p==NULL){
