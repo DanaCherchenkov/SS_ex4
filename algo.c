@@ -199,15 +199,12 @@ int getNodeID(Graph *G, Node *node) {
 
 
 int Dijsktra(Graph *g, Node *src, Node *dest) {
-    // Node *close;
     Node *curr;
     int distance[g->size_all_nodes];
     int prev[g->size_all_nodes];
     int visited[g->size_all_nodes];
-    // double temp;
     double path;
     int v;
-    // int idx;
     int short_i;
     int i;
 
@@ -222,7 +219,6 @@ int Dijsktra(Graph *g, Node *src, Node *dest) {
         visited[i] = 0; // visited
     }
 
-    // v = 0;
     for(v=0;v < g->size_all_nodes; v++) {
         path = 1000;
         short_i = 0;
@@ -235,7 +231,6 @@ int Dijsktra(Graph *g, Node *src, Node *dest) {
 
         curr = g->node_ID[short_i];
         visited[short_i] = 1;
-        // v += 1;
 
         if(curr == dest && curr->node_num == dest->node_num){
             break;
@@ -259,6 +254,7 @@ int Dijsktra(Graph *g, Node *src, Node *dest) {
     return shortest;
    
 }
+
 
 
 
@@ -291,7 +287,8 @@ Graph * A(char *arr, int len){
 
     return graph;
 }
-///////////////////////////////////////////////////////////
+
+
 void B(char *arr,Graph *graph){
     Node *node;
     node = (Node *) malloc(sizeof(Node));
@@ -355,7 +352,8 @@ void B(char *arr,Graph *graph){
         i++;
     }
 }
-/////////////////////////////////////////////////////////
+
+
 void D(char *arr,Graph *g){
     Node *temp;
     for (int i = 0; i < g->size_all_nodes ; ++i) {
@@ -366,7 +364,6 @@ void D(char *arr,Graph *g){
     remove_node(g,temp);
     free(temp);
 }
-
 
 
 void S(char *arr,Graph *g){
@@ -386,7 +383,6 @@ void S(char *arr,Graph *g){
     
 }
 
-////////////////////////////////////////////////////
 void reverse(char *arr, int size, Node *src) {
     char temp[size];
     strcpy(temp, arr);
@@ -399,7 +395,6 @@ void reverse(char *arr, int size, Node *src) {
     arr[1]=src->node_num;
 
 }
-////////////////////////////////////////////////////
 int tsp(Graph *g, char *list_of_node, int size){
     if (size==1 || size==0){
         return -1;
@@ -475,11 +470,9 @@ int tsp(Graph *g, char *list_of_node, int size){
 }
 
 
-//////////////////////////////////////////////
 void T(char *ans,Graph *g){
     printf( "TSP shortest path: %d \n", tsp(g,ans, strlen(ans)));
 }
-
 
 char* replace(char *arr , int len, int index,char *str){
     int i = index;
@@ -496,7 +489,6 @@ int main(){
     char sen[1024];
     gets(sen);
 
-    // int len= strlen(f)+1;
     char sen_co[strlen(sen)+1];
     char* pi=(char*)malloc((strlen(sen)+1) + 1);
      if(pi==NULL){ //check if the pointer is null
@@ -508,7 +500,6 @@ int main(){
 
     int r=0;
     for (int b= 0; b<strlen(sen)+1; b++){
-    // while(b<strlen(sen)+1){
         if(sen_co[b]==' '){
             r++;
         }
@@ -517,12 +508,10 @@ int main(){
     char new[strlen(sen)+1-r];
     int k=0,j=0;
     for(int k = 0;k<strlen(sen)+1; k++ ){
-    // while(k<strlen(sen)+1){
         if(sen_co[k]!=' '){
             new[j]=sen_co[k];
             j++;
         }
-        // k++;
     }
     
     char str_n[strlen(new)-1];
@@ -535,7 +524,6 @@ int main(){
 
     int i=0;
     for (int j = 0; j < strlen(str_n); j++) {
-        // char c= str_n[j];
         if (str_n[j]=='B'||str_n[j]=='D'||str_n[j]=='S'||str_n[j]=='T'||str_n[j]=='\0'|| str_n[j]=='A'){
             break;
         }else{
@@ -561,11 +549,9 @@ int main(){
     free(p);
     ans[strlen(str_n)-i]='\0';
     while (strlen(ans)!=0) {
-        // char first = ans[0];
         if (ans[0] == 'B') {
             int t = 0;
             for (int j = 1; j < strlen(ans); j++) {
-                // char c = ans[j];
                 if (ans[j] == 'B' || ans[j] == 'D' || ans[j] == 'S' || ans[j] == 'T' || ans[j] == '\0' || ans[j] == 'A') {
                     break;
                 } else {
@@ -592,7 +578,6 @@ int main(){
         if (ans[0] == 'D') {
             int t = 0;
             for (int j = 1; j < strlen(ans); j++) {
-                // char c = ans[j];
                 if (ans[j] == 'B' || ans[j] == 'D' || ans[j] == 'S' || ans[j] == 'T' || ans[j] == '\0' || ans[j] == 'A') {
                     break;
                 } else {
@@ -618,7 +603,6 @@ int main(){
         if (ans[0] == 'A') {
             int t = 0;
             for (int j = 1; j < strlen(ans); j++) {
-                // char c = ans[j];
                 if (ans[j] == 'B' || ans[j] == 'D' || ans[j] == 'S' || ans[j] == 'T' || ans[j] == '\0'|| ans[j]=='A') {
                     break;
                 } else {
@@ -685,8 +669,8 @@ int main(){
             }
             T(replace(ans, t, 1,po), g);
             free(po);
-         char* p=(char*)malloc((strlen(ans) - t - 1) + 1);
-          if(p==NULL){
+            char* p=(char*)malloc((strlen(ans) - t - 1) + 1);
+            if(p==NULL){
                 exit(1);
             }
             strcpy(ans, replace(ans, (strlen(ans) - t - 1), t + 1,p));
@@ -695,9 +679,8 @@ int main(){
     }
 
 
-release_graph(g);
+    release_graph(g);
     
 
 return 0;
 }
-
