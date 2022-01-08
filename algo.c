@@ -72,30 +72,29 @@ Parameters: G - the spesific graph we want to remove the edge.
             src - will be the source node_ID of the edge
             dest - will be the destination node_ID of the edge
 */
-void remove_edge(Graph *G, Node *a, Node *b) {
-    int save=0;
+void remove_edge(Graph *G, Node *src, Node *dest) {
+    int temp=0;
     int j=0;
-    for (int i = 0; i <a->size_close_nodes; i++) {
-        if(a->close_nodes[i]->node_num != b->node_num){
-            a->close_nodes[j]=a->close_nodes[i];
+    for (int i = 0; i <src->size_close_nodes; i++) {
+        if(src->close_nodes[i]->node_num != dest->node_num){
+            src->close_nodes[j]=src->close_nodes[i];
             j++;
         }else{
-            save=i;
+            temp=i;
 
         }
     }
-    int d=save+1;
-    for (int i = d; i <a->size_close_nodes; i++) {
-        a->weight[save]=a->weight[i];
-        save++;
+    for (int i = temp+1; i <src->size_close_nodes; i++) {
+        src->weight[temp]=src->weight[i];
+        temp++;
     }
-    a->close_nodes = (Node **)realloc(a->close_nodes, (a->size_close_nodes - 1) * sizeof(Node *));
-    if(a->close_nodes==NULL){
+    src->close_nodes = (Node **)realloc(src->close_nodes, (src->size_close_nodes - 1) * sizeof(Node *));
+    if(src->close_nodes==NULL){
         exit(1);
     }
-    a->size_close_nodes -= 1;
-    a->weight = (double *)realloc(a->weight, (a->size_close_nodes) * sizeof(double));
-    if(a->weight==NULL){
+    src->size_close_nodes -= 1;
+    src->weight = (double *)realloc(src->weight, (src->size_close_nodes) * sizeof(double));
+    if(src->weight==NULL){
         exit(1);
     }
 }
@@ -430,7 +429,6 @@ int tsp(Graph *g, char *list_of_node, int size){
     else {
 
         for (int i = 0; i < size; ++i) {
-            // Node *s;
             for (int i = 0; i < g->size_all_nodes; ++i) {
                 if (list_of_node[size-1] == g->node_ID[i]->node_num ) {
                     Node *n = g->node_ID[i];
@@ -506,7 +504,7 @@ int main(){
     }
     
     char new[strlen(sen)+1-r];
-    int k=0,j=0;
+    int j=0;
     for(int k = 0;k<strlen(sen)+1; k++ ){
         if(sen_co[k]!=' '){
             new[j]=sen_co[k];
@@ -630,7 +628,6 @@ int main(){
         if (ans[0] == 'S') {
             int t = 0;
             for (int j = 1; j < strlen(ans); j++) {
-                char c = ans[j];
                 if (ans[j] == 'B' || ans[j] == 'D' || ans[j] == 'S' || ans[j] == 'T' || ans[j] == '\0' || ans[j] == 'A') {
                     break;
                 } else {
