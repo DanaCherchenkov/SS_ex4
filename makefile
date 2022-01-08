@@ -8,11 +8,11 @@ all: graph
 graph: libgraph.a
 	$(CC) $(FLAGS) -o graph libgraph.a 
 
-libgraph.a: algo.o 
-	$(AR) -rcs libgraph.a algo.o
+libgraph.a: graph.o 
+	$(AR) -rcs libgraph.a graph.o
 
-algo.o: algo.c algo.h
-	$(CC) $(FLAGS) -c algo.c
+graph.o: graph.c graph.h
+	$(CC) $(FLAGS) -c graph.c
 
 
 .PHONY: clean all
