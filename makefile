@@ -11,7 +11,7 @@ graph: algo.o libgraph.a
 libgraph.a: algo.o 
 	$(AR) -rcs libgraph.a algo.o
 
-algo.o: algo.c 
+algo.o: algo.c algo.h
 	$(CC) $(FLAGS) -c algo.c
 
 
