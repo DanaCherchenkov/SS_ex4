@@ -186,16 +186,12 @@ void remove_node(Graph *g, Node *node) {
 This function return the index number of the node in the list.
 */
 int getNodeID(Graph *G, Node *node) {
-    int i;
-    Node *n;
-    for(i = 0; i < G->size_all_nodes; i++) {
-        n = G->node_ID[i];
-        if(n->node_num == node->node_num) {
+ for(int i = 0; i < G->size_all_nodes; i++) {
+        if(G->node_ID[i]->node_num == node->node_num) {
             return i;
         }
     }
-    printf("id : %c\n", node->node_num);
-    printf("Invalid id detected.\n");
+    printf("In index: %c\n", node->node_num);
     return -1;
 }
 
