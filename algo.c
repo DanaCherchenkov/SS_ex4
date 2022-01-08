@@ -356,16 +356,17 @@ void B(char *arr,Graph *graph){
     }
 }
 /////////////////////////////////////////////////////////
-void D(char ans [],Graph *graph){
-    Node *save;
-    for (int i = 0; i <graph->size_all_nodes ; ++i) {
-        if(graph->node_ID[i]->node_num == ans[0]){
-            save=graph->node_ID[i];
+void D(char *arr,Graph *g){
+    Node *temp;
+    for (int i = 0; i < g->size_all_nodes ; ++i) {
+        if(g->node_ID[i]->node_num == arr[0]){
+            temp=g->node_ID[i];
         }
     }
-    remove_node(graph,save);
-    free(save);
+    remove_node(g,temp);
+    free(temp);
 }
+
 
 
 //////////////////////////////////////////////////////////
