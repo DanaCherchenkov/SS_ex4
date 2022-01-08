@@ -292,63 +292,70 @@ Graph * A(char *arr, int len){
     return graph;
 }
 ///////////////////////////////////////////////////////////
-void B(char ans [],Graph *graph){
+void B(char *arr,Graph *graph){
     Node *node;
     node = (Node *) malloc(sizeof(Node));
-    if(node==NULL){
+    if(node == NULL){
         exit(1);
     }
-    node->node_num = ans[0];
+
+    node->node_num = arr[0];
      for(int i=0; i<graph->size_all_nodes; i++){
         if(node->node_num == graph->node_ID[i]->node_num){
-          free(graph->node_ID[i]->close_nodes);
-          free(graph->node_ID[i]->weight);
-          graph->node_ID[i]->size_close_nodes=0;
-          graph->node_ID[i]->close_nodes = (Node **) malloc(graph->node_ID[i]->size_close_nodes * sizeof(Node *));
+            free(graph->node_ID[i]->close_nodes);
+            free(graph->node_ID[i]->weight);
+            graph->node_ID[i]->size_close_nodes=0;
+            graph->node_ID[i]->close_nodes = (Node **) malloc(graph->node_ID[i]->size_close_nodes * sizeof(Node *));
             if(graph->node_ID[i]->close_nodes==NULL){
                 exit(1);
             }
-            graph->node_ID[i]->weight = (double *) malloc(graph->node_ID[i]->size_close_nodes * sizeof(double));
-            if(graph->node_ID[i]->weight==NULL){
+            double *w = graph->node_ID[i]->weight;
+            w = (double *) malloc(graph->node_ID[i]->size_close_nodes * sizeof(double));
+            if(w == NULL){
                 exit(1);
             }
-            Node *s;
+            Node *src;
             for(int i=0; i<graph->size_all_nodes; i++){
-            if(node->node_num == graph->node_ID[i]->node_num){
-                s= graph->node_ID[i];}}
-                free(node);
-                while(ans[i]!='\0'){
-                Node *dest = init_node(graph,ans[i]);
-                insert_node(graph,dest);
-                i++;
-                insert_edge(s,dest, ((ans[i])-'0'));
-                i++;
+                if(node->node_num == graph->node_ID[i]->node_num){
+                        src= graph->node_ID[i];
+                    }
+                }
+                    free(node);
+                    while(arr[i]!='\0'){
+                    Node *dest = init_node(graph,arr[i]);
+                    insert_node(graph,dest);
+                    i++;
+                    double w = (arr[i])-'0';
+                    insert_edge(src,dest, w);
+                    i++;
+                
             }
             return;
             
         }
     }
     node->size_close_nodes = 0;
-    node->close_nodes = (Node **) malloc(node->size_close_nodes * sizeof(Node *));
-    if(node->close_nodes==NULL){
-        exit(1);
-    }
+   
     node->weight = (double *) malloc(node->size_close_nodes * sizeof(double));
     if(node->weight==NULL){
+        exit(1);
+    }
+    node->close_nodes = (Node **) malloc(node->size_close_nodes * sizeof(Node *));
+    if(node->close_nodes==NULL){
         exit(1);
     }
 
     insert_node(graph,node);
     int i=1;
-    while(ans[i]!='\0'){
-        Node *dest = init_node(graph,ans[i]);
+    while(arr[i]!='\0'){
+        Node *dest = init_node(graph,arr[i]);
         insert_node(graph,dest);
         i++;
-        insert_edge(node,dest, ((ans[i])-'0'));
+        double w = (arr[i])-'0';
+        insert_edge(node,dest, w);
         i++;
     }
 }
-
 /////////////////////////////////////////////////////////
 void D(char ans [],Graph *graph){
     Node *save;
