@@ -576,13 +576,13 @@ int main(){
             B(replace(arr,p , l, 1), g);
             free(p);
             
-            int l_n =strlen(arr) - l - 1; 
-            char* n_p=(char*)malloc(l_n + 1);
-            if(n_p == NULL){
+            int l_n =(strlen(arr) - l - 1); 
+            char* po=(char*)malloc((strlen(arr) - l - 1) + 1);
+            if(po == NULL){
             exit(1);
             }
-            strcpy(arr, replace(arr,n_p,l_n, l + 1));
-            free(n_p);
+            strcpy(arr, replace(arr,po,(strlen(arr) - l - 1), l + 1));
+            free(po);
           
         }
 
@@ -599,22 +599,22 @@ int main(){
             }
 
             
-            char* po=(char*)malloc(l + 1);
-            if(po == NULL){
+            char* p=(char*)malloc(l + 1);
+            if(p == NULL){
                 exit(1);
             }
 
-            D(replace(arr,po , l, 1), g);
-            free(po);
-            int len = strlen(arr) - l - 1;
-            char* p=(char*)malloc(len + 1);
-
-             if(p == NULL){
-                exit(1);
-            }
-
-            strcpy(arr, replace(arr,p , len, l + 1));
+            D(replace(arr,p , l, 1), g);
             free(p);
+            int len = strlen(arr) - l - 1;
+            char* po=(char*)malloc((strlen(arr) - l - 1) + 1);
+
+             if(po == NULL){
+                exit(1);
+            }
+
+            strcpy(arr, replace(arr,po , (strlen(arr) - l - 1), l + 1));
+            free(po);
         }
 
         if (arr[0] == 'A') {
@@ -636,11 +636,11 @@ int main(){
             free(p);
             
             
-            char* po=(char*)malloc(len + 1);
+            char* po=(char*)malloc((strlen(arr) - l - 1) + 1);
              if(po==NULL){
                 exit(1);
             }
-            strcpy(arr, replace(arr,po , len, l + 1));
+            strcpy(arr, replace(arr,po , (strlen(arr) - l - 1), l + 1));
             free(po);
         }
 
@@ -663,12 +663,12 @@ int main(){
             S(replace(arr,p , l, 1), g);
             free(p);
 
-            char* po=(char*)malloc(len + 1);
+            char* po=(char*)malloc((strlen(arr) - l - 1) + 1);
 
              if(po == NULL){
                 exit(1);
             }
-            strcpy(arr, replace(arr,po , len, l + 1));
+            strcpy(arr, replace(arr,po , (strlen(arr) - l - 1), l + 1));
             free(po);
         }
 
@@ -690,11 +690,11 @@ int main(){
             T(replace(arr,p, l, 1), g);
             free(p);
 
-            char* po=(char*)malloc(len + 1);
+            char* po=(char*)malloc((strlen(arr) - l - 1) + 1);
             if(po == NULL){
                 exit(1);
             }
-            strcpy(arr, replace(arr,po ,len, l + 1));
+            strcpy(arr, replace(arr,po ,(strlen(arr) - l - 1), l + 1));
             free(po);
         }
     }
