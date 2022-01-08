@@ -18,7 +18,7 @@ typedef struct graph_ {
 
 
 
-//------------------------------------Graph-------------------------------
+
 
 Graph *build_graph() {
     Graph *new_graph = (Graph *)malloc(sizeof(Graph));
@@ -32,16 +32,20 @@ void release_graph(struct graph_ *G) {
     int i;
     for(i = 0 ; i < G->size_all_nodes; i++) {
         free(G->node_ID[i]->close_nodes);
-        free(G->node_ID[i]);
         free(G->node_ID[i]->weight);
+        free(G->node_ID[i]);
     }
     free(G->node_ID);
     free(G);
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
 //---------------------------------Edge----------------------------------------------
 
+/* 
+This function will add an edge from the source node to the destination node, and determine the weight of this edge.
+*/
 /* 
 This function will add an edge from the source node to the destination node, and determine the weight of this edge.
 */
@@ -61,8 +65,6 @@ void insert_edge(Node *src, Node *dest, double weight) {
     src->weight[src->size_close_nodes] = weight;
     src->size_close_nodes++;
 }
-
-
 
 /* 
 This function will delet the edge you asked for.
@@ -99,32 +101,31 @@ void remove_edge(Graph *G, Node *src, Node *dest) {
         exit(1);
     }
 }
-
 //--------------------------------Node-----------------------------------------
 
 /*
 This function will creat a new node by the data recive into the graph.
 */
-Node *init_node(Graph *G, char data) {
-
-    for(int i = 0; i < G->size_all_nodes; i++){
-        if(data == G->node_ID[i]->node_num){
-            return G->node_ID[i];
+Node *init_node(Graph *g, char data) {
+     for(int i=0; i<g->size_all_nodes; i++){
+        if(data==g->node_ID[i]->node_num){
+            return g->node_ID[i];
         }
     }
     Node *new_node;
     new_node = (Node *) malloc(sizeof(Node));
-    if(new_node != NULL){
-        new_node->node_num = data;
-        new_node->size_close_nodes = 0;
-        new_node->close_nodes = (Node **) malloc(new_node->size_close_nodes * sizeof(Node *));
+    if(new_node == NULL){
+        exit(1);
     }
-    exit(1);
-    
-    if(new_node->close_nodes != NULL){
-        new_node->weight = (double *) malloc(new_node->size_close_nodes * sizeof(double));
+    new_node->node_num = data;
+    new_node->size_close_nodes = 0;
+    new_node->close_nodes = (Node **) malloc(new_node->size_close_nodes * sizeof(Node *));
+
+    if(new_node->close_nodes==NULL){
+        exit(1);
     }
-    exit(1);
+
+    new_node->weight = (double *) malloc(new_node->size_close_nodes * sizeof(double));
 
     if(new_node->weight==NULL){
         exit(1);
@@ -133,32 +134,22 @@ Node *init_node(Graph *G, char data) {
 }
 
 /*
-This function return the index number of the node in the list.
-*/
-int getNodeID(Graph *G, Node *node) {
-    for(int i = 0; i < G->size_all_nodes; i++) {
-        if(G->node_ID[i]->node_num == node->node_num) {
-            return i;
-        }
-    }
-    printf("In index: %c\n", node->node_num);
-    return -1;
-}
-
-/*
 This function will add a new node to the graph.
 */
-void insert_node(Graph *G, Node *new_node) {
-    for(int i = 0; i < G->size_all_nodes; i++){
-        if(G->node_ID[i]->node_num == new_node->node_num){
-            return; 
+void insert_node(Graph *g, Node *new_node) {
+  for(int i=0; i<g->size_all_nodes; i++){
+        if(new_node->node_num == g->node_ID[i]->node_num){
+            return;
         }
     }
-    if((Node **)realloc(G->node_ID, (G->size_all_nodes + 1) * sizeof(Node *)) == NULL){
+
+    g->node_ID = (Node **)realloc(g->node_ID, (g->size_all_nodes + 1) * sizeof(Node *));
+    if(g->node_ID==NULL){
         exit(1);
     }
-    G->node_ID[G->size_all_nodes] = new_node;
-    G->size_all_nodes++;
+
+    g->node_ID[g->size_all_nodes] = new_node;
+    g->size_all_nodes += 1;
 }
 
 /*
@@ -185,13 +176,26 @@ void remove_node(Graph *G, Node *node) {
     }
     G->size_all_nodes--;
     for (int i = 0; i < G->size_all_nodes; i++){
-        Node *curr =G->node_ID[i];
+        Node *n =G->node_ID[i];
         for (int j = 0; j < G->node_ID[i]->size_close_nodes; j++){
-            if(curr->close_nodes[j]->node_num == node->node_num){
-                remove_edge(G, curr, node);
+            if(n->close_nodes[j]->node_num == node->node_num){
+                remove_edge(G, n, node);
             }
         }
     }
+}
+
+/*
+This function return the index number of the node in the list.
+*/
+int getNodeID(Graph *G, Node *node) {
+    for(int i = 0; i < G->size_all_nodes; i++) {
+        if(G->node_ID[i]->node_num == node->node_num) {
+            return i;
+        }
+    }
+    printf("In index: %c\n", node->node_num);
+    return -1;
 }
 
 //---------------------------------Helper Functions-------------------------------------------
@@ -252,16 +256,16 @@ int Dijsktra(Graph *graph, Node *start, Node *end) {
     i = getNodeID(graph, end);
     int w = dist[i];
     return w;
+   
 }
-
 
 
 
 
 //-------------------------------Functions-----------------------------------
 
-Graph * build_graph_cmd(char *ans, int len ){
-    Graph *g = build_graph();
+Graph * A(char *ans, int len ){
+    Graph *g=build_graph();
     int i=1;
     while (i<len-1){
         if (ans[i]=='n'){
@@ -339,7 +343,7 @@ void B(char ans [],Graph *graph){
         Node *dest = init_node(graph,ans[i]);
         insert_node(graph,dest);
         i++;
-        insert_edge(node,dest, ((ans[i]) - '0'));
+        insert_edge(node,dest, ((ans[i])-'0'));
         i++;
     }
 }
@@ -387,10 +391,7 @@ void to_start(char *list, int len, Node *s) {
     list[1]=s->node_num;
 
 }
-
-
-//////////////////////////////////////////////
-
+////////////////////////////////////////////////////
 int tsp(Graph *graph, char list [], int len){
     if (len==1||len==0){
         return -1;
@@ -429,6 +430,7 @@ int tsp(Graph *graph, char list [], int len){
                 if (graph->node_ID[i]->node_num == list[len-1]) {
                     s = graph->node_ID[i];
                     to_start(list,len,s);
+
                 }
 
             }
@@ -462,12 +464,13 @@ int tsp(Graph *graph, char list [], int len){
 
 }
 
+
+//////////////////////////////////////////////
 void T(char ans [],Graph *graph){
     printf( "TSP shortest path: %d \n", tsp(graph,ans, strlen(ans)));
 }
 
-//////////////////////////////////////////////////////
-char* replace(char *arr,char* str , int len, int index){
+char* replace(char *arr,char *str , int len, int index){
     int i = index;
     int j = 0;
     for (int n= 0; n < len; n++) {
@@ -541,7 +544,7 @@ int main(){
     }
 
     curr[i]='\0';
-    Graph *g= build_graph_cmd(curr, i); //create 
+    Graph *g= A(curr, i); //create 
     int len = strlen(str_n)-i;
     char arr[len];
 
@@ -630,7 +633,7 @@ int main(){
                 exit(1);
             }
             release_graph(g);
-            g= build_graph_cmd(replace(arr,p , l, 1), l);
+            g= A(replace(arr,p , l, 1), l);
             free(p);
             
             
