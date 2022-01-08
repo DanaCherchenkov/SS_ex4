@@ -2,82 +2,116 @@
 #include <stdlib.h>
 #include <string.h>
 
-//------------------------Structers--------------------------
+
+char* cut(char str[], int t, int i,char* str_cnt){
+    int g=0;
+    int k = i;
+    int cnt=0;
+    while (cnt<t){
+        str_cnt[g++]=str[k++];
+        cnt++;
+    }
+    str_cnt[t]='\0';
+    return str_cnt;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 typedef struct node_ {
-    char node_num;
-    double *weight;
-    struct node_ **close_nodes; 
-    int size_close_nodes;
+    char id;
+    int number_Of_neighbors;
+    struct node_ **neighbors; 
+    double *weights;
 } Node;
 
 typedef struct graph_ {
-    int size_all_nodes;
-    struct node_ **node_ID; 
+    int number_Of_nodes;
+    struct node_ **nodes; 
 } Graph;
 
 
 
-
-
-Graph *build_graph() {
-    Graph *new_graph = (Graph *)malloc(sizeof(Graph));
-
-    new_graph->size_all_nodes = 0;
-    new_graph->node_ID = (Node **)malloc(new_graph->size_all_nodes * sizeof(Node *));
-    return new_graph;
+Graph *init_graph() {
+    Graph *graph = (Graph *)malloc(sizeof(Graph));
+    graph->number_Of_nodes = 0;
+    graph->nodes = (Node **)malloc(graph->number_Of_nodes * sizeof(Node *));
+    return graph;
 }
 
-void release_graph(struct graph_ *G) {
+void free_graph(struct graph_ *graph) {
     int i;
-    for(i = 0 ; i < G->size_all_nodes; i++) {
-        free(G->node_ID[i]->weight);
-        free(G->node_ID[i]->close_nodes);
-        free(G->node_ID[i]);
+    for(i=0; i<graph->number_Of_nodes; i++) {
+        free(graph->nodes[i]->weights);
+        free(graph->nodes[i]->neighbors);
+        free(graph->nodes[i]);
     }
-    free(G->node_ID);
-    free(G);
+    free(graph->nodes);
+    free(graph);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
-//---------------------------------Edge----------------------------------------------
 
-/* 
-This function will add an edge from the source node to the destination node, and determine the weight of this edge.
-*/
-/* 
-This function will add an edge from the source node to the destination node, and determine the weight of this edge.
-*/
-void insert_edge(Node *src, Node *dest, double weight) {
+Node *create_node(Graph *graph, char label) {
+    for(int i=0; i<graph->number_Of_nodes; i++){
+        if(label==graph->nodes[i]->id){
+            return graph->nodes[i];
+        }}
+    Node *node;
+    node = (Node *) malloc(sizeof(Node));
+    if(node==NULL){
+        exit(1);
+    }
+    node->id = label;
+    node->number_Of_neighbors = 0;
+    node->neighbors = (Node **) malloc(node->number_Of_neighbors * sizeof(Node *));
+    if(node->neighbors==NULL){
+        exit(1);
+    }
+    node->weights = (double *) malloc(node->number_Of_neighbors * sizeof(double));
+    if(node->weights==NULL){
+        exit(1);
+    }
+    return node;
     
-    src->weight = (double *)realloc(src->weight, (src->size_close_nodes + 1) * sizeof(double));
-    if(src->weight == NULL){
-        exit(1);
-    }
-   
-    src->close_nodes =(Node **)realloc(src->close_nodes, (src->size_close_nodes + 1) * sizeof(Node *));
-    if(src->close_nodes == NULL){
-        exit(1);
-    }
-
-    src->close_nodes[src->size_close_nodes] = dest;
-    src->weight[src->size_close_nodes] = weight;
-    src->size_close_nodes += 1;
 }
 
-/* 
-This function will delet the edge you asked for.
-Parameters: G - the spesific graph we want to remove the edge.
-            src - will be the source node_ID of the edge
-            dest - will be the destination node_ID of the edge
-*/
-void remove_edge(Graph *G, Node *a, Node *b) {
+void add_node(Graph *graph, Node *node) {
+    for(int i=0; i<graph->number_Of_nodes; i++){
+        if(node->id == graph->nodes[i]->id){
+            // graph->nodes[i]=node;
+            return;
+        }
+    }
+    graph->nodes = (Node **)realloc(graph->nodes, (graph->number_Of_nodes + 1) * sizeof(Node *));
+    if(graph->nodes==NULL){
+        exit(1);
+    }
+    graph->nodes[graph->number_Of_nodes] = node;
+    graph->number_Of_nodes += 1;
+}
+
+
+void add_edge(Node *a, Node *b, double weight) {
+    a->neighbors = (Node **)realloc(a->neighbors, (a->number_Of_neighbors + 1) * sizeof(Node *));
+    if(a->neighbors ==NULL){
+        exit(1);
+    }
+    a->weights = (double *)realloc(a->weights, (a->number_Of_neighbors + 1) * sizeof(double));
+    if(a->weights==NULL){
+        exit(1);
+    }
+    a->neighbors[a->number_Of_neighbors] = b;
+    a->weights[a->number_Of_neighbors] = weight;
+    a->number_Of_neighbors += 1;
+}
+
+///////////////////////////////////////////////////////////////////////////
+void delete_edge(Graph *graph, Node *a, Node *b) {
     int save=0;
     int j=0;
-    for (int i = 0; i <a->size_close_nodes; i++) {
-        if(a->close_nodes[i]->node_num != b->node_num){
-            a->close_nodes[j]=a->close_nodes[i];
+    for (int i = 0; i <a->number_Of_neighbors; i++) {
+        if(a->neighbors[i]->id != b->id){
+            a->neighbors[j]=a->neighbors[i];
             j++;
         }else{
             save=i;
@@ -85,134 +119,78 @@ void remove_edge(Graph *G, Node *a, Node *b) {
         }
     }
     int d=save+1;
-    for (int i = d; i <a->size_close_nodes; i++) {
-        a->weight[save]=a->weight[i];
+    for (int i = d; i <a->number_Of_neighbors; i++) {
+        a->weights[save]=a->weights[i];
         save++;
     }
-    a->close_nodes = (Node **)realloc(a->close_nodes, (a->size_close_nodes - 1) * sizeof(Node *));
-    if(a->close_nodes==NULL){
+    a->neighbors = (Node **)realloc(a->neighbors, (a->number_Of_neighbors - 1) * sizeof(Node *));
+    if(a->neighbors==NULL){
         exit(1);
     }
-    a->size_close_nodes -= 1;
-    a->weight = (double *)realloc(a->weight, (a->size_close_nodes) * sizeof(double));
-    if(a->weight==NULL){
+    a->number_Of_neighbors -= 1;
+    a->weights = (double *)realloc(a->weights, (a->number_Of_neighbors) * sizeof(double));
+    if(a->weights==NULL){
         exit(1);
     }
 }
 
-//--------------------------------Node-----------------------------------------
 
-/*
-This function will creat a new node by the data recive into the graph.
-*/
-Node *init_node(Graph *g, char data) {
-     for(int i=0; i<g->size_all_nodes; i++){
-        if(data==g->node_ID[i]->node_num){
-            return g->node_ID[i];
-        }
-    }
-    Node *new_node;
-    new_node = (Node *) malloc(sizeof(Node));
-    if(new_node == NULL){
-        exit(1);
-    }
-    new_node->node_num = data;
-    new_node->size_close_nodes = 0;
-    new_node->close_nodes = (Node **) malloc(new_node->size_close_nodes * sizeof(Node *));
-
-    if(new_node->close_nodes==NULL){
-        exit(1);
-    }
-
-    new_node->weight = (double *) malloc(new_node->size_close_nodes * sizeof(double));
-
-    if(new_node->weight==NULL){
-        exit(1);
-    }
-    return new_node;
-}
-
-/*
-This function will add a new node to the graph.
-*/
-void insert_node(Graph *g, Node *new_node) {
-  for(int i=0; i<g->size_all_nodes; i++){
-        if(new_node->node_num == g->node_ID[i]->node_num){
-            return;
-        }
-    }
-
-    g->node_ID = (Node **)realloc(g->node_ID, (g->size_all_nodes + 1) * sizeof(Node *));
-    if(g->node_ID==NULL){
-        exit(1);
-    }
-
-    g->node_ID[g->size_all_nodes] = new_node;
-    g->size_all_nodes += 1;
-}
-
-/*
-This function will delet the node from the grapg, and will remove the all our edges of this spisific node.
-*/
-void remove_node(Graph *g, Node *node) {
+void delete_node(Graph *graph, Node *node) {
     int j=0;
-    int i;
-    for (i = 0; i <g->size_all_nodes; i++) {
-        if (g->node_ID[i]->node_num != node->node_num) {
-                g->node_ID[j] = g->node_ID[i];
-                j++;
+    for (int i = 0; i <graph->number_Of_nodes; i++) {
+        if (graph->nodes[i]->id != node->id) {
+            graph->nodes[j] = graph->nodes[i];
+            j++;
         }else{
-            free(g->node_ID[i]->close_nodes);
-            free(g->node_ID[i]->weight);    
-        }    
-    }
-    g->node_ID = (Node **) realloc(g->node_ID, (g->size_all_nodes - 1) * sizeof(Node *));
-    if(g->node_ID == NULL){
+        free(graph->nodes[i]->neighbors);
+        free(graph->nodes[i]->weights);    
+        }
+        
+        }
+    graph->nodes = (Node **) realloc(graph->nodes, (graph->number_Of_nodes - 1) * sizeof(Node *));
+    if(graph->nodes==NULL){
         exit(1);
     }
-    g->size_all_nodes -= 1;
-    for (int i = 0; i  < g->size_all_nodes; i++){
-         Node *s =g->node_ID[i];
-        for (int j = 0; j <g->node_ID[i]->size_close_nodes; j++){
-            if(s->close_nodes[j]->node_num == node->node_num){
-                remove_edge(g,s,node);
+    graph->number_Of_nodes -= 1;
+    for (int i = 0; i <graph->number_Of_nodes; i++){
+        Node *s =graph->nodes[i];
+        for (int j = 0; j <graph->nodes[i]->number_Of_neighbors; j++){
+            if(s->neighbors[j]->id == node->id){
+                delete_edge(graph,s,node);
             }
-        }
-    }
+        }}
 
 }
-
-/*
-This function return the index number of the node in the list.
-*/
-int getNodeID(Graph *G, Node *node) {
+///////////////////////////////////////////////////////////////////////////////////
+int getNodeIndex(Graph *graph, Node *node) {
     int i;
     Node *n;
-    for(i = 0; i < G->size_all_nodes; i++) {
-        n = G->node_ID[i];
-        if(n->node_num == node->node_num) {
+    for(i = 0; i < graph->number_Of_nodes; i++) {
+        n = graph->nodes[i];
+        if(n->id == node->id) {
             return i;
         }
     }
-    printf("id : %c\n", node->node_num);
+    printf("id : %c\n", node->id);
     printf("Invalid id detected.\n");
     return -1;
 }
 
-//---------------------------------Helper Functions-------------------------------------------
-
+int sameNodes(Node *id1, Node *id2) {
+    return id1 == id2 && id1->id == id2->id;
+}
 
 int Dijsktra(Graph *graph, Node *start, Node *end) {
     Node *neighbor,*node,*cur;
-    int dist[graph->size_all_nodes];
-    int previous[graph->size_all_nodes];
-    int visit[graph->size_all_nodes];
+    int dist[graph->number_Of_nodes];
+    int previous[graph->number_Of_nodes];
+    int visit[graph->number_Of_nodes];
     double alternative,shortest ;
     int n_visit, indx, shortest_indx,i;
 
-    for(i = 0; i < graph->size_all_nodes; i++) {
-        node = graph->node_ID[i];
-        if(node->node_num == start->node_num) {
+    for(i = 0; i < graph->number_Of_nodes; i++) {
+        node = graph->nodes[i];
+        if(node->id == start->id) {
             dist[i] = 0;}
         else {
             dist[i] = 1000;}
@@ -221,28 +199,28 @@ int Dijsktra(Graph *graph, Node *start, Node *end) {
     }
 
     n_visit = 0;
-    while(n_visit < graph->size_all_nodes) {
+    while(n_visit < graph->number_Of_nodes) {
         shortest = 1000;
         shortest_indx = 0;
-        for(i = 0; i < graph->size_all_nodes; i++) {
+        for(i = 0; i < graph->number_Of_nodes; i++) {
             if(dist[i] < shortest && !visit[i]) {
                 shortest_indx = i;
                 shortest = dist[i];
             }
         }
 
-        cur = graph->node_ID[shortest_indx];
+        cur = graph->nodes[shortest_indx];
         visit[shortest_indx] = 1;
         n_visit += 1;
 
-        if(cur == end && cur->node_num == end->node_num){
+        if(sameNodes(cur, end)) {
             break;
         }
 
-        for(i = 0; i < cur->size_close_nodes; i++) {
-            neighbor = cur->close_nodes[i];
-            indx = getNodeID(graph, neighbor);
-            alternative = dist[shortest_indx] + cur->weight[i];
+        for(i = 0; i < cur->number_Of_neighbors; i++) {
+            neighbor = cur->neighbors[i];
+            indx = getNodeIndex(graph, neighbor);
+            alternative = dist[shortest_indx] + cur->weights[i];
 
             if(dist[indx] > alternative) {
                 dist[indx] = alternative;
@@ -251,7 +229,7 @@ int Dijsktra(Graph *graph, Node *start, Node *end) {
         }
     }
 
-    i = getNodeID(graph, end);
+    i = getNodeIndex(graph, end);
     int w = dist[i];
     return w;
    
@@ -260,26 +238,25 @@ int Dijsktra(Graph *graph, Node *start, Node *end) {
 
 
 
-//-------------------------------Functions-----------------------------------
-
+///////////////////////////////////////////////////////
 Graph * A(char *ans, int len ){
-    Graph *g=build_graph();
+    Graph *g=init_graph();
     int i=1;
     while (i<len-1){
         if (ans[i]=='n'){
             i++;
             
-            Node *src = init_node(g,ans[i]);
-            insert_node(g,src);
+            Node *src = create_node(g,ans[i]);
+            add_node(g,src);
             if (i>=len-2){
                 break;
             }
             i++;
             while(ans[i]!='n'){
-                Node *dest = init_node(g,ans[i]);
-                insert_node(g,dest);
+                Node *dest = create_node(g,ans[i]);
+                add_node(g,dest);
                 i++;
-                insert_edge(src,dest, ((ans[i])-'0'));
+                add_edge(src,dest, ((ans[i])-'0'));
                 i++;
             }
 
@@ -295,53 +272,53 @@ void B(char ans [],Graph *graph){
     if(node==NULL){
         exit(1);
     }
-    node->node_num = ans[0];
-     for(int i=0; i<graph->size_all_nodes; i++){
-        if(node->node_num == graph->node_ID[i]->node_num){
-          free(graph->node_ID[i]->close_nodes);
-          free(graph->node_ID[i]->weight);
-          graph->node_ID[i]->size_close_nodes=0;
-          graph->node_ID[i]->close_nodes = (Node **) malloc(graph->node_ID[i]->size_close_nodes * sizeof(Node *));
-            if(graph->node_ID[i]->close_nodes==NULL){
+    node->id = ans[0];
+     for(int i=0; i<graph->number_Of_nodes; i++){
+        if(node->id == graph->nodes[i]->id){
+          free(graph->nodes[i]->neighbors);
+          free(graph->nodes[i]->weights);
+          graph->nodes[i]->number_Of_neighbors=0;
+          graph->nodes[i]->neighbors = (Node **) malloc(graph->nodes[i]->number_Of_neighbors * sizeof(Node *));
+            if(graph->nodes[i]->neighbors==NULL){
                 exit(1);
             }
-            graph->node_ID[i]->weight = (double *) malloc(graph->node_ID[i]->size_close_nodes * sizeof(double));
-            if(graph->node_ID[i]->weight==NULL){
+            graph->nodes[i]->weights = (double *) malloc(graph->nodes[i]->number_Of_neighbors * sizeof(double));
+            if(graph->nodes[i]->weights==NULL){
                 exit(1);
             }
             Node *s;
-            for(int i=0; i<graph->size_all_nodes; i++){
-            if(node->node_num == graph->node_ID[i]->node_num){
-                s= graph->node_ID[i];}}
+            for(int i=0; i<graph->number_Of_nodes; i++){
+            if(node->id == graph->nodes[i]->id){
+                s= graph->nodes[i];}}
                 free(node);
                 while(ans[i]!='\0'){
-                Node *dest = init_node(graph,ans[i]);
-                insert_node(graph,dest);
+                Node *dest = create_node(graph,ans[i]);
+                add_node(graph,dest);
                 i++;
-                insert_edge(s,dest, ((ans[i])-'0'));
+                add_edge(s,dest, ((ans[i])-'0'));
                 i++;
             }
             return;
             
         }
     }
-    node->size_close_nodes = 0;
-    node->close_nodes = (Node **) malloc(node->size_close_nodes * sizeof(Node *));
-    if(node->close_nodes==NULL){
+    node->number_Of_neighbors = 0;
+    node->neighbors = (Node **) malloc(node->number_Of_neighbors * sizeof(Node *));
+    if(node->neighbors==NULL){
         exit(1);
     }
-    node->weight = (double *) malloc(node->size_close_nodes * sizeof(double));
-    if(node->weight==NULL){
+    node->weights = (double *) malloc(node->number_Of_neighbors * sizeof(double));
+    if(node->weights==NULL){
         exit(1);
     }
 
-    insert_node(graph,node);
+    add_node(graph,node);
     int i=1;
     while(ans[i]!='\0'){
-        Node *dest = init_node(graph,ans[i]);
-        insert_node(graph,dest);
+        Node *dest = create_node(graph,ans[i]);
+        add_node(graph,dest);
         i++;
-        insert_edge(node,dest, ((ans[i])-'0'));
+        add_edge(node,dest, ((ans[i])-'0'));
         i++;
     }
 }
@@ -349,12 +326,12 @@ void B(char ans [],Graph *graph){
 /////////////////////////////////////////////////////////
 void D(char ans [],Graph *graph){
     Node *save;
-    for (int i = 0; i <graph->size_all_nodes ; ++i) {
-        if(graph->node_ID[i]->node_num == ans[0]){
-            save=graph->node_ID[i];
+    for (int i = 0; i <graph->number_Of_nodes ; ++i) {
+        if(graph->nodes[i]->id == ans[0]){
+            save=graph->nodes[i];
         }
     }
-    remove_node(graph,save);
+    delete_node(graph,save);
     free(save);
 }
 
@@ -362,18 +339,18 @@ void D(char ans [],Graph *graph){
 //////////////////////////////////////////////////////////
 void S(char ans [],Graph *graph){
     Node *src;
-    for (int i = 0; i <graph->size_all_nodes ; ++i) {
-        if(graph->node_ID[i]->node_num == ans[0]){
-            src=graph->node_ID[i];
+    for (int i = 0; i <graph->number_Of_nodes ; ++i) {
+        if(graph->nodes[i]->id == ans[0]){
+            src=graph->nodes[i];
         }
     }
     Node *dest;
-    for (int i = 0; i <graph->size_all_nodes ; ++i) {
-        if(graph->node_ID[i]->node_num == ans[1]){
-            dest=graph->node_ID[i];
+    for (int i = 0; i <graph->number_Of_nodes ; ++i) {
+        if(graph->nodes[i]->id == ans[1]){
+            dest=graph->nodes[i];
         }
     }
-    printf("Dijsktra shortest path: %d ", Dijsktra(graph, src, dest));
+    printf("Dijsktra shortest path: %d \n", Dijsktra(graph, src, dest));
     
 }
 
@@ -386,7 +363,7 @@ void to_start(char *list, int len, Node *s) {
         list[j] = cnt[i];
         j++;
     }
-    list[1]=s->node_num;
+    list[1]=s->id;
 
 }
 ////////////////////////////////////////////////////
@@ -400,18 +377,18 @@ int tsp(Graph *graph, char list [], int len){
     int w=0;
     for(int d=1; d<len-1; d++) {
         Node *save_id1;
-        for (int i = 0; i < graph->size_all_nodes; ++i) {
-            if (graph->node_ID[i]->node_num == list[d]) {
-                save_id1 = graph->node_ID[i];
+        for (int i = 0; i < graph->number_Of_nodes; ++i) {
+            if (graph->nodes[i]->id == list[d]) {
+                save_id1 = graph->nodes[i];
             }
         }
         Node *save_id2;
-        for (int i = 0; i < graph->size_all_nodes; ++i) {
-            if (graph->node_ID[i]->node_num == list[d + 1]) {
-                save_id2 = graph->node_ID[i];
+        for (int i = 0; i < graph->number_Of_nodes; ++i) {
+            if (graph->nodes[i]->id == list[d + 1]) {
+                save_id2 = graph->nodes[i];
             }
         }
-        if(save_id1->size_close_nodes>0) {
+        if(save_id1->number_Of_neighbors>0) {
             w += Dijsktra(graph, save_id1, save_id2);
         }
         else{
@@ -424,9 +401,9 @@ int tsp(Graph *graph, char list [], int len){
 
         for (int i = 0; i < len; ++i) {
             Node *s;
-            for (int i = 0; i < graph->size_all_nodes; ++i) {
-                if (graph->node_ID[i]->node_num == list[len-1]) {
-                    s = graph->node_ID[i];
+            for (int i = 0; i < graph->number_Of_nodes; ++i) {
+                if (graph->nodes[i]->id == list[len-1]) {
+                    s = graph->nodes[i];
                     to_start(list,len,s);
 
                 }
@@ -437,15 +414,15 @@ int tsp(Graph *graph, char list [], int len){
         int z=0;
         for(int d=1; d<len-1; d++) {
             Node *save_id1;
-            for (int i = 0; i < graph->size_all_nodes; ++i) {
-                if (graph->node_ID[i]->node_num == list[d]) {
-                    save_id1 = graph->node_ID[i];
+            for (int i = 0; i < graph->number_Of_nodes; ++i) {
+                if (graph->nodes[i]->id == list[d]) {
+                    save_id1 = graph->nodes[i];
                 }
             }
             Node *save_id2;
-            for (int i = 0; i < graph->size_all_nodes; ++i) {
-                if (graph->node_ID[i]->node_num == list[d + 1]) {
-                    save_id2 = graph->node_ID[i];
+            for (int i = 0; i < graph->number_Of_nodes; ++i) {
+                if (graph->nodes[i]->id == list[d + 1]) {
+                    save_id2 = graph->nodes[i];
                 }
             }
                 z += Dijsktra(graph, save_id1, save_id2);
@@ -468,255 +445,7 @@ void T(char ans [],Graph *graph){
     printf( "TSP shortest path: %d \n", tsp(graph,ans, strlen(ans)));
 }
 
-// char* replace(char *arr,char *str , int len, int index){
-//     int i = index;
-//     int j = 0;
-//     for (int n= 0; n < len; n++) {
-//         str[j++]=arr[i++];
-//     }
-//     str[len]='\0';
-//     return str;
-// }
-
-
-// int main(){
-
-//     char sen[1024]; //max size
-//     gets(sen); 
-
-//     char sen_co[strlen(sen)+1];
-
-//     char* str=(char*)malloc((strlen(sen)+1) + 1); 
-
-//      if(str == NULL){ //check if the pointer is null
-//         exit(1);
-//     }
-    
-//     strcpy(sen_co,replace(sen, str , strlen(sen)+1, 0 ));
-//     free(str);
-
-//     int r=0;
-//     for(int i = 0; i < strlen(sen)+1; i++){
-//         if(sen_co[i]==' '){
-//             r++;
-//         }
-//         i++;
-//     }
-    
-//     char new[strlen(sen)+1];
-//     int j=0;
-//     for(int i=0; i < strlen(sen)+1; i++){
-
-//         if(sen_co[i]!=' '){
-//             new[j]=sen_co[i];
-//             j++;
-//         }
-//         i++;
-//     }
-
-//     char str_n[strlen(new)-1];
-//     char* p_strn=(char*)malloc(strlen(new)-1 + 1);
-
-//      if(p_strn == NULL){
-//         exit(1);
-//     }
-
-//     strcpy(str_n,replace(new ,p_strn , strlen(new)-1, 1));
-//     free(p_strn);
-
-//     int i=0;
-//     int k =0;
-//     while (k < strlen(str_n)) {
-//         if ( str_n[k] =='B'|| str_n[k] =='D'|| str_n[k] =='S'|| str_n[k] =='T'|| str_n[k] =='\0'||  str_n[k]=='A'){
-//             break;
-//         }else{
-//             i++;
-//         }
-//         k++;
-//     }
-
-//     int c=0;
-//     char curr[i+1];
-//     for (int j = 0; j <= i-1 ; j++) {
-//         curr[c]= str_n[j];
-//         c++;
-//     }
-
-//     curr[i]='\0';
-//     Graph *g= A(curr, i); //create 
-//     int len = strlen(str_n)-i;
-//     char arr[len];
-
-//     char* p = (char*)malloc(len + 1);
-//      if(p==NULL){
-//         exit(1);
-//     }
-
-//     strcpy(arr,replace(str_n,p , len,i)) ;
-//     free(p);
-
-//     arr[len]='\0';
-//     while (strlen(arr)!=0) {
-
-//         if (arr[0] == 'B') {
-//             int l = 0;
-//             for (int j = 1; j < strlen(arr); j++) {
-//                 if (arr[j] == 'B' || arr[j] == 'D' || arr[j] == 'S' || arr[j] == 'T' || arr[j] == '\0' || arr[j] == 'A') {
-//                     break;
-//                 } else {
-//                     l++;
-//                 }
-//             }
-           
-//             char* p=(char*)malloc(l + 1);
-//             if(p == NULL){
-//                 exit(1);
-//             }
-
-//             B(replace(arr,p , l, 1), g);
-//             free(p);
-            
-//             int l_n =strlen(arr) - l - 1; 
-//             char* n_p=(char*)malloc(l_n + 1);
-//             if(n_p == NULL){
-//             exit(1);
-//             }
-//             strcpy(arr, replace(arr,n_p,l_n, l + 1));
-//             free(n_p);
-          
-//         }
-
-
-//         if (arr[0] == 'D') {
-//             int l = 0;
-//             for (int j = 1; j < strlen(arr); j++) {
-//                 if (arr[j] == 'B' || arr[j] == 'D' || arr[j] == 'S' || arr[j] == 'T' || arr[j] == '\0' || arr[j] == 'A') {
-//                     break;
-                    
-//                 } else {
-//                     l++;
-//                 }
-//             }
-
-            
-//             char* po=(char*)malloc(l + 1);
-//             if(po == NULL){
-//                 exit(1);
-//             }
-
-//             D(replace(arr,po , l, 1), g);
-//             free(po);
-//             int len = strlen(arr) - l - 1;
-//             char* p=(char*)malloc(len + 1);
-
-//              if(p == NULL){
-//                 exit(1);
-//             }
-
-//             strcpy(arr, replace(arr,p , len, l + 1));
-//             free(p);
-//         }
-
-//         if (arr[0] == 'A') {
-//             int l = 0;
-//             for (int j = 1; j < strlen(arr); j++) {
-//                 if (arr[j] == 'B' || arr[j] == 'D' || arr[j] == 'S' || arr[j] == 'T' || arr[j] == '\0'|| arr[j] =='A') {
-//                     break;
-//                 } else {
-//                     l++;
-//                 }
-//             }
-
-//             char* p=(char*)malloc(l + 1);
-//              if(p==NULL){
-//                 exit(1);
-//             }
-//             release_graph(g);
-//             g= A(replace(arr,p , l, 1), l);
-//             free(p);
-            
-            
-//             char* po=(char*)malloc(len + 1);
-//              if(po==NULL){
-//                 exit(1);
-//             }
-//             strcpy(arr, replace(arr,po , len, l + 1));
-//             free(po);
-//         }
-
-
-//         if (arr[0] == 'S') {
-//             int l = 0;
-//             for (int j = 1; j < strlen(arr); j++) {
-//                 if (arr[j] == 'B' || arr[j] == 'D' || arr[j] == 'S' || arr[j] == 'T' || arr[j] == '\0' || arr[j] == 'A') {
-//                     break;
-//                 } else {
-//                     l++;
-//                 }
-//             }
-
-//             char* p=(char*)malloc(l + 1);
-//             if(p == NULL){
-//                 exit(1);
-//             }
-
-//             S(replace(arr,p , l, 1), g);
-//             free(p);
-
-//             char* po=(char*)malloc(len + 1);
-
-//              if(po == NULL){
-//                 exit(1);
-//             }
-//             strcpy(arr, replace(arr,po , len, l + 1));
-//             free(po);
-//         }
-
-
-//         if (arr[0] == 'T') {
-//             int l = 0;
-//             for (int j = 1; j < strlen(arr); j++) {
-//                 if (arr[j] == 'B' || arr[j] == 'D' || arr[j] == 'S' || arr[j] == 'T' || arr[j] == '\0' || arr[j] == 'A') {
-//                     break;
-//                 } else {
-//                     l++;
-//                 }
-//             }
-//             char* p=(char*)malloc(l + 1);
-//              if(p==NULL){
-//                 exit(1);
-//             }
-
-//             T(replace(arr,p, l, 1), g);
-//             free(p);
-
-//             char* po=(char*)malloc(len + 1);
-//             if(po == NULL){
-//                 exit(1);
-//             }
-//             strcpy(arr, replace(arr,po ,len, l + 1));
-//             free(po);
-//         }
-//     }
-
-
-//     release_graph(g);
-    
-// return 0;
-// }
 //////////////////////////////////////////////////////
-char* cut(char str[], int t, int i,char* str_cnt){
-    int g=0;
-    int k = i;
-    int cnt=0;
-    while (cnt<t){
-        str_cnt[g++]=str[k++];
-        cnt++;
-    }
-    str_cnt[t]='\0';
-    return str_cnt;
-}
-
 int main(){
     char f[1024];
     gets(f);
@@ -847,7 +576,7 @@ int main(){
              if(str_cn==NULL){
                 exit(1);
             }
-            release_graph(g);
+            free_graph(g);
             g=A(cut(ans, t, 1,str_cn), t);
             free(str_cn);
             
@@ -913,7 +642,7 @@ int main(){
     }
 
 
-release_graph(g);
+free_graph(g);
     
 
 return 0;
