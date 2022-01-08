@@ -375,7 +375,7 @@ void S(char ans [],Graph *graph){
             dest=graph->node_ID[i];
         }
     }
-    printf("Dijsktra shortest path: %d ", Dijsktra(graph, src, dest));
+       printf("Dijsktra shortest path: %d \n", Dijsktra(graph, src, dest));
     
 }
 
