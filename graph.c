@@ -386,16 +386,16 @@ void reverse(char *arr, int size, Node *src) {
     arr[1]=src->node_num;
 
 }
-int tsp(Graph *g, char *list_of_node, int size){
-    if (size==1 || size==0){
-        return -1;
+void TSP_cmd(Graph *g, char *list_of_node){
+    if (strlen(list_of_node)==1){
+        printf( " %d \n", -1);
     }
-    if (size==2){
-        return -1;
+    if (strlen(list_of_node)==2){
+        printf( " %d \n", -1);
     }
 
     int w1 = 0;
-    for(int d=1; d<size-1; d++) {
+    for(int d=1; d<strlen(list_of_node)-1; d++) {
         Node *node1;
         for (int i = 0; i < g->size_all_nodes; ++i) {
             if (g->node_ID[i]->node_num == list_of_node[d]) {
@@ -416,15 +416,15 @@ int tsp(Graph *g, char *list_of_node, int size){
         }
     }
     if (w1 < 10){
-        return w1;
+        printf( "TSP shortest path: %d \n", w1);
     }
     else {
 
-        for (int i = 0; i < size; ++i) {
+        for (int i = 0; i < strlen(list_of_node); ++i) {
             for (int i = 0; i < g->size_all_nodes; ++i) {
-                if (list_of_node[size-1] == g->node_ID[i]->node_num ) {
+                if (list_of_node[strlen(list_of_node)-1] == g->node_ID[i]->node_num ) {
                     Node *n = g->node_ID[i];
-                    reverse(list_of_node,size,n);
+                    reverse(list_of_node,strlen(list_of_node),n);
 
                 }
 
@@ -432,7 +432,7 @@ int tsp(Graph *g, char *list_of_node, int size){
         }
 
         int w2=0;
-        for(int j=1; j<size-1; j++) {
+        for(int j=1; j<strlen(list_of_node)-1; j++) {
             Node *node1;
             for (int i = 0; i < g->size_all_nodes; ++i) {
                 if ( list_of_node[j] == g->node_ID[i]->node_num) {
@@ -450,18 +450,18 @@ int tsp(Graph *g, char *list_of_node, int size){
         }
 
         if(w2 >= 1000){
-            return -1;
+            printf( " %d \n", -1);
         }
 
-        return w2;
+        printf( "TSP shortest path: %d \n", w2);
     }
 
 
 }
 
-void TSP_cmd(char *ans,Graph *g){
-    printf( "TSP shortest path: %d \n", tsp(g,ans, strlen(ans)));
-}
+// void TSP_cmd(char *ans,Graph *g){
+//     printf( "TSP shortest path: %d \n", tsp(g,ans));
+// }
 
 void del_node(char *arr,Graph *g){
     Node *temp;
@@ -665,7 +665,7 @@ int main(){
              if(po==NULL){
                 exit(1);
             }
-            TSP_cmd(replace(ans, t, 1,po), g);
+            TSP_cmd(g,replace(ans, t, 1,po));
             free(po);
             char* p=(char*)malloc((strlen(ans) - t - 1) + 1);
             if(p==NULL){
