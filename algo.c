@@ -468,7 +468,7 @@ void T(char ans [],Graph *graph){
     printf( "TSP shortest path: %d \n", tsp(graph,ans, strlen(ans)));
 }
 
-char* replace(char arr[],char *str , int len, int index){
+char* replace(char arr[] , int len, int index,char *str){
     int i = index;
     int j = 0;
     for (int n= 0; n < len; n++) {
@@ -480,227 +480,203 @@ char* replace(char arr[],char *str , int len, int index){
 
 
 int main(){
-
-    char sen[1024]; //max size
-    gets(sen); 
-
-    char sen_co[strlen(sen)+1];
-
-    char* str=(char*)malloc((strlen(sen)+1) + 1); 
-
-     if(str == NULL){ //check if the pointer is null
+    char f[1024];
+    gets(f);
+    int len= strlen(f)+1;
+    char nn[len];
+    char* str_cnt=(char*)malloc(len + 1);
+     if(str_cnt==NULL){
         exit(1);
     }
-    
-    strcpy(sen_co,replace(sen, str , strlen(sen)+1, 0 ));
-    free(str);
-
-    int r=0;
-    for(int i = 0; i < strlen(sen)+1; i++){
-        if(sen_co[i]==' '){
+    strcpy(nn,replace(f , len, 0,str_cnt));
+    free(str_cnt);
+    int r=0, b=0;
+    while(b<len){
+        if(nn[b]==' '){
             r++;
         }
-        i++;
+        b++;
     }
     
-    char new[strlen(sen)+1];
-    int j=0;
-    for(int i=0; i < strlen(sen)+1; i++){
-
-        if(sen_co[i]!=' '){
-            new[j]=sen_co[i];
+    char n[len-r];
+    int k=0,j=0;
+    while(k<len){
+        if(nn[k]!=' '){
+            n[j]=nn[k];
             j++;
         }
-        i++;
+        k++;
     }
-
-    char str_n[strlen(new)-1];
-    char* p_strn=(char*)malloc(strlen(new)-1 + 1);
-
-     if(p_strn == NULL){
+    char cnt[strlen(n)-1];
+    char* strr_cnt=(char*)malloc(strlen(n)-1 + 1);
+     if(strr_cnt==NULL){
         exit(1);
     }
-
-    strcpy(str_n,replace(new ,p_strn , strlen(new)-1, 1));
-    free(p_strn);
-
+    strcpy(cnt,replace(n , strlen(n)-1, 1,strr_cnt));
+    free(strr_cnt);
     int i=0;
-    int k =0;
-    while (k < strlen(str_n)) {
-        if ( str_n[k] =='B'|| str_n[k] =='D'|| str_n[k] =='S'|| str_n[k] =='T'|| str_n[k] =='\0'||  str_n[k]=='A'){
+    for (int j = 0; j < strlen(cnt); j++) {
+        char c= cnt[j];
+        if (c=='B'||c=='D'||c=='S'||c=='T'||c=='\0'|| c=='A'){
             break;
         }else{
             i++;
         }
-        k++;
     }
 
-    int c=0;
-    char curr[i+1];
-    for (int j = 0; j <= i-1 ; j++) {
-        curr[c]= str_n[j];
-        c++;
+    int copy=0;
+    char current[i+1];
+    for (int l = 0; l <=i-1 ; l++) {
+        current[copy]= cnt[l] ;
+        copy++;
     }
-
-    curr[i]='\0';
-    Graph *g= A(curr, i); //create 
-    int len = strlen(str_n)-i;
-    char arr[len];
-
-    char* p = (char*)malloc(len + 1);
-     if(p==NULL){
+    current[i]='\0';
+    Graph *g=A(current, i);
+    char ans[strlen(cnt)-i];
+    char* str_cntt=(char*)malloc(strlen(cnt)-i + 1);
+     if(str_cntt==NULL){
         exit(1);
     }
-
-    strcpy(arr,replace(str_n,p , len,i)) ;
-    free(p);
-
-    arr[len]='\0';
-    while (strlen(arr)!=0) {
-
-        if (arr[0] == 'B') {
-            int l = 0;
-            for (int j = 1; j < strlen(arr); j++) {
-                if (arr[j] == 'B' || arr[j] == 'D' || arr[j] == 'S' || arr[j] == 'T' || arr[j] == '\0' || arr[j] == 'A') {
+    strcpy(ans,replace(cnt , (strlen(cnt)-i),i,str_cntt)) ;
+    free(str_cntt);
+    ans[strlen(cnt)-i]='\0';
+    while (strlen(ans)!=0) {
+        char first = ans[0];
+        if (first == 'B') {
+            int t = 0;
+            for (int j = 1; j < strlen(ans); j++) {
+                char c = ans[j];
+                if (c == 'B' || c == 'D' || c == 'S' || c == 'T' || c == '\0' || c == 'A') {
                     break;
                 } else {
-                    l++;
+                    t++;
                 }
             }
            
-            char* p=(char*)malloc(l + 1);
-            if(p == NULL){
-                exit(1);
-            }
-
-            B(replace(arr,p , l, 1), g);
-            free(p);
-            
-            int l_n =(strlen(arr) - l - 1); 
-            char* po=(char*)malloc((strlen(arr) - l - 1) + 1);
-            if(po == NULL){
+            char* str_cn=(char*)malloc(t + 1);
+             if(str_cn==NULL){
+             exit(1);
+              }
+            B(replace(ans, t, 1,str_cn), g);
+            free(str_cn);
+            char* str_cnt=(char*)malloc((strlen(ans) - t - 1) + 1);
+             if(str_cnt==NULL){
             exit(1);
             }
-            strcpy(arr, replace(arr,po,(strlen(arr) - l - 1), l + 1));
-            free(po);
+            strcpy(ans, replace(ans, (strlen(ans) - t - 1), t + 1,str_cnt));
+            free(str_cnt);
           
         }
 
 
-        if (arr[0] == 'D') {
-            int l = 0;
-            for (int j = 1; j < strlen(arr); j++) {
-                if (arr[j] == 'B' || arr[j] == 'D' || arr[j] == 'S' || arr[j] == 'T' || arr[j] == '\0' || arr[j] == 'A') {
+        if (first == 'D') {
+            int t = 0;
+            for (int j = 1; j < strlen(ans); j++) {
+                char c = ans[j];
+                if (c == 'B' || c == 'D' || c == 'S' || c == 'T' || c == '\0' || c == 'A') {
                     break;
-                    
                 } else {
-                    l++;
+                    t++;
                 }
             }
 
             
-            char* p=(char*)malloc(l + 1);
-            if(p == NULL){
+            char* str_cn=(char*)malloc(t + 1);
+            if(str_cn==NULL){
                 exit(1);
             }
-
-            D(replace(arr,p , l, 1), g);
-            free(p);
-            int len = strlen(arr) - l - 1;
-            char* po=(char*)malloc((strlen(arr) - l - 1) + 1);
-
-             if(po == NULL){
+            D(replace(ans, t, 1,str_cn), g);
+            free(str_cn);
+            char* str_cnt=(char*)malloc((strlen(ans) - t - 1) + 1);
+             if(str_cnt==NULL){
                 exit(1);
             }
-
-            strcpy(arr, replace(arr,po , (strlen(arr) - l - 1), l + 1));
-            free(po);
+            strcpy(ans, replace(ans, (strlen(ans) - t - 1), t + 1,str_cnt));
+            free(str_cnt);
         }
 
-        if (arr[0] == 'A') {
-            int l = 0;
-            for (int j = 1; j < strlen(arr); j++) {
-                if (arr[j] == 'B' || arr[j] == 'D' || arr[j] == 'S' || arr[j] == 'T' || arr[j] == '\0'|| arr[j] =='A') {
+        if (first == 'A') {
+            int t = 0;
+            for (int j = 1; j < strlen(ans); j++) {
+                char c = ans[j];
+                if (c == 'B' || c == 'D' || c == 'S' || c == 'T' || c == '\0'|| c=='A') {
                     break;
                 } else {
-                    l++;
+                    t++;
                 }
             }
-
-            char* p=(char*)malloc(l + 1);
-             if(p==NULL){
+            char* str_cn=(char*)malloc(t + 1);
+             if(str_cn==NULL){
                 exit(1);
             }
             release_graph(g);
-            g= A(replace(arr,p , l, 1), l);
-            free(p);
+            g=A(replace(ans, t, 1,str_cn), t);
+            free(str_cn);
             
             
-            char* po=(char*)malloc((strlen(arr) - l - 1) + 1);
-             if(po==NULL){
+            char* str_cnt=(char*)malloc((strlen(ans) - t - 1) + 1);
+             if(str_cnt==NULL){
                 exit(1);
             }
-            strcpy(arr, replace(arr,po , (strlen(arr) - l - 1), l + 1));
-            free(po);
+            strcpy(ans, replace(ans, (strlen(ans) - t - 1), t + 1,str_cnt));
+            free(str_cnt);
         }
 
 
-        if (arr[0] == 'S') {
-            int l = 0;
-            for (int j = 1; j < strlen(arr); j++) {
-                if (arr[j] == 'B' || arr[j] == 'D' || arr[j] == 'S' || arr[j] == 'T' || arr[j] == '\0' || arr[j] == 'A') {
+        if (first == 'S') {
+            int t = 0;
+            for (int j = 1; j < strlen(ans); j++) {
+                char c = ans[j];
+                if (c == 'B' || c == 'D' || c == 'S' || c == 'T' || c == '\0' || c == 'A') {
                     break;
                 } else {
-                    l++;
+                    t++;
                 }
             }
-
-            char* p=(char*)malloc(l + 1);
-            if(p == NULL){
+            char* str_cn=(char*)malloc(t + 1);
+            if(str_cn==NULL){
                 exit(1);
             }
+            S(replace(ans, t, 1,str_cn), g);
+            free(str_cn);
 
-            S(replace(arr,p , l, 1), g);
-            free(p);
-
-            char* po=(char*)malloc((strlen(arr) - l - 1) + 1);
-
-             if(po == NULL){
+            char* str_cnt=(char*)malloc((strlen(ans) - t - 1) + 1);
+             if(str_cnt==NULL){
                 exit(1);
             }
-            strcpy(arr, replace(arr,po , (strlen(arr) - l - 1), l + 1));
-            free(po);
+            strcpy(ans, replace(ans, (strlen(ans) - t - 1), t + 1,str_cnt));
+            free(str_cnt);
         }
 
 
-        if (arr[0] == 'T') {
-            int l = 0;
-            for (int j = 1; j < strlen(arr); j++) {
-                if (arr[j] == 'B' || arr[j] == 'D' || arr[j] == 'S' || arr[j] == 'T' || arr[j] == '\0' || arr[j] == 'A') {
+        if (first == 'T') {
+            int t = 0;
+            for (int j = 1; j < strlen(ans); j++) {
+                char c = ans[j];
+                if (c == 'B' || c == 'D' || c == 'S' || c == 'T' || c == '\0' || c == 'A') {
                     break;
                 } else {
-                    l++;
+                    t++;
                 }
             }
-            char* p=(char*)malloc(l + 1);
-             if(p==NULL){
+            char* str_cn=(char*)malloc(t + 1);
+             if(str_cn==NULL){
                 exit(1);
             }
-
-            T(replace(arr,p, l, 1), g);
-            free(p);
-
-            char* po=(char*)malloc((strlen(arr) - l - 1) + 1);
-            if(po == NULL){
+            T(replace(ans, t, 1,str_cn), g);
+            free(str_cn);
+         char* str_cnt=(char*)malloc((strlen(ans) - t - 1) + 1);
+          if(str_cnt==NULL){
                 exit(1);
             }
-            strcpy(arr, replace(arr,po ,(strlen(arr) - l - 1), l + 1));
-            free(po);
+            strcpy(ans, replace(ans, (strlen(ans) - t - 1), t + 1,str_cnt));
+            free(str_cnt);
         }
     }
 
 
-    release_graph(g);
+release_graph(g);
     
+
 return 0;
 }
