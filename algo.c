@@ -72,35 +72,34 @@ Parameters: G - the spesific graph we want to remove the edge.
             src - will be the source node_ID of the edge
             dest - will be the destination node_ID of the edge
 */
-void remove_edge(Graph *G, Node *src, Node *dest) {
-    int temp = 0;
-    int s_all = src->size_close_nodes;
-    for (int i = 0; i < s_all; i++) {
-        for(int j = 0; j < s_all; j++){
-            if(src->close_nodes[i]->node_num != dest->node_num){
-                src->close_nodes[j] = src->close_nodes[i];
-            }
-            else
-                temp=i;
+void remove_edge(Graph *G, Node *a, Node *b) {
+    int save=0;
+    int j=0;
+    for (int i = 0; i <a->size_close_nodes; i++) {
+        if(a->close_nodes[i]->node_num != b->node_num){
+            a->close_nodes[j]=a->close_nodes[i];
+            j++;
+        }else{
+            save=i;
+
         }
     }
-    int curr = temp + 1;
-    for (int i = curr; i < s_all; i++) {
-        src->weight[temp] = src->weight[i];
-        temp++;
+    int d=save+1;
+    for (int i = d; i <a->size_close_nodes; i++) {
+        a->weight[save]=a->weight[i];
+        save++;
     }
-    
-    src->close_nodes = (Node **)realloc(src->close_nodes, (s_all - 1) * sizeof(Node *));
-    if(src->close_nodes == NULL){
+    a->close_nodes = (Node **)realloc(a->close_nodes, (a->size_close_nodes - 1) * sizeof(Node *));
+    if(a->close_nodes==NULL){
         exit(1);
     }
-    s_all--;
-
-    src->weight = (double *)realloc(src->weight, (s_all) * sizeof(double));
-    if(src->weight == NULL){
+    a->size_close_nodes -= 1;
+    a->weight = (double *)realloc(a->weight, (a->size_close_nodes) * sizeof(double));
+    if(a->weight==NULL){
         exit(1);
     }
 }
+
 //--------------------------------Node-----------------------------------------
 
 /*
