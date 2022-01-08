@@ -31,8 +31,8 @@ Graph *build_graph() {
 void release_graph(struct graph_ *G) {
     int i;
     for(i = 0 ; i < G->size_all_nodes; i++) {
-        free(G->node_ID[i]->close_nodes);
         free(G->node_ID[i]->weight);
+        free(G->node_ID[i]->close_nodes);
         free(G->node_ID[i]);
     }
     free(G->node_ID);
