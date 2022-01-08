@@ -468,7 +468,7 @@ void T(char ans [],Graph *graph){
     printf( "TSP shortest path: %d \n", tsp(graph,ans, strlen(ans)));
 }
 
-char* replace(char *arr,char *str , int len, int index){
+char* replace(char arr[],char *str , int len, int index){
     int i = index;
     int j = 0;
     for (int n= 0; n < len; n++) {
