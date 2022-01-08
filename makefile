@@ -5,7 +5,7 @@ LM = -lm
 
 all: graph
 
-graph: algo.c libgraph.a
+graph: algo.o libgraph.a
 	$(CC) $(FLAGS) -o graph algo.o libgraph.a 
 
 libgraph.a: algo.o 
