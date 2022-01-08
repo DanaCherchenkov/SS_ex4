@@ -1,0 +1,18 @@
+Graph *build_graph();
+void release_graph(struct graph_ *G);
+void insert_edge(Node *src, Node *dest, double weight);
+void remove_edge(Graph *G, Node *src, Node *dest);
+int getNodeID(Graph *G, Node *node);
+void insert_node(Graph *G, Node *new_node);
+void remove_node(Graph *G, Node *node);
+int sameNodes(Node *id1, Node *id2) ;
+int Dijsktra(Graph *graph, Node *start, Node *end);
+Graph * build_graph_cmd(char *ans, int len );
+void B(char ans [],Graph *graph);
+void D(char ans [],Graph *graph);
+void S(char ans [],Graph *graph);
+void to_start(char *list, int len, Node *s);
+int tsp(Graph *graph, char list [], int len);
+void T(char ans [],Graph *graph);
+char* replace(char *arr,char* str , int len, int index);
+int main();
