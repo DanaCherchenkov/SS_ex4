@@ -369,21 +369,20 @@ void D(char *arr,Graph *g){
 
 
 
-//////////////////////////////////////////////////////////
-void S(char ans [],Graph *graph){
-    Node *src;
-    for (int i = 0; i <graph->size_all_nodes ; ++i) {
-        if(graph->node_ID[i]->node_num == ans[0]){
-            src=graph->node_ID[i];
+void S(char *arr,Graph *g){
+    Node *s;
+    for (int i = 0; i < g->size_all_nodes ; ++i) {
+        if(arr[0] == g->node_ID[i]->node_num){
+            s = g->node_ID[i];
         }
     }
-    Node *dest;
-    for (int i = 0; i <graph->size_all_nodes ; ++i) {
-        if(graph->node_ID[i]->node_num == ans[1]){
-            dest=graph->node_ID[i];
+    Node *d;
+    for (int i = 0; i < g->size_all_nodes ; ++i) {
+        if(arr[1] == g->node_ID[i]->node_num){
+            d = g->node_ID[i];
         }
     }
-       printf("Dijsktra shortest path: %d \n", Dijsktra(graph, src, dest));
+    printf("Dijsktra shortest path: %d \n", Dijsktra(g, s, d));
     
 }
 
