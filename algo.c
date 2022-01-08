@@ -198,61 +198,67 @@ int getNodeID(Graph *G, Node *node) {
 //---------------------------------Helper Functions-------------------------------------------
 
 
-int Dijsktra(Graph *graph, Node *start, Node *end) {
-    Node *neighbor,*node,*cur;
-    int dist[graph->size_all_nodes];
-    int previous[graph->size_all_nodes];
-    int visit[graph->size_all_nodes];
-    double alternative,shortest ;
-    int n_visit, indx, shortest_indx,i;
+int Dijsktra(Graph *g, Node *src, Node *dest) {
+    // Node *close;
+    Node *curr;
+    int distance[g->size_all_nodes];
+    int prev[g->size_all_nodes];
+    int visited[g->size_all_nodes];
+    // double temp;
+    double path;
+    int v;
+    // int idx;
+    int short_i;
+    int i;
 
-    for(i = 0; i < graph->size_all_nodes; i++) {
-        node = graph->node_ID[i];
-        if(node->node_num == start->node_num) {
-            dist[i] = 0;}
+    for(i = 0; i < g->size_all_nodes; i++) {
+        if(g->node_ID[i]->node_num == src->node_num) {
+            distance[i] = 0;
+        }
         else {
-            dist[i] = 1000;}
-        previous[i] = -1;
-        visit[i] = 0;
+            distance[i] = 1000;
+        }
+        prev[i] = -1;
+        visited[i] = 0; // visited
     }
 
-    n_visit = 0;
-    while(n_visit < graph->size_all_nodes) {
-        shortest = 1000;
-        shortest_indx = 0;
-        for(i = 0; i < graph->size_all_nodes; i++) {
-            if(dist[i] < shortest && !visit[i]) {
-                shortest_indx = i;
-                shortest = dist[i];
+    // v = 0;
+    for(v=0;v < g->size_all_nodes; v++) {
+        path = 1000;
+        short_i = 0;
+        for(i = 0; i < g->size_all_nodes; i++) {
+            if(!visited[i] && distance[i] < path ) {
+                short_i = i;
+                path = distance[i];
             }
         }
 
-        cur = graph->node_ID[shortest_indx];
-        visit[shortest_indx] = 1;
-        n_visit += 1;
+        curr = g->node_ID[short_i];
+        visited[short_i] = 1;
+        // v += 1;
 
-        if(cur == end && cur->node_num == end->node_num){
+        if(curr == dest && curr->node_num == dest->node_num){
             break;
         }
 
-        for(i = 0; i < cur->size_close_nodes; i++) {
-            neighbor = cur->close_nodes[i];
-            indx = getNodeID(graph, neighbor);
-            alternative = dist[shortest_indx] + cur->weight[i];
+        for(i = 0; i < curr->size_close_nodes; i++) {
+            Node *close = curr->close_nodes[i];
+            double temp = distance[short_i] + curr->weight[i];
+            int idx = getNodeID(g, close);
 
-            if(dist[indx] > alternative) {
-                dist[indx] = alternative;
-                previous[indx] = shortest_indx;
+
+            if(distance[idx] > temp) {
+                distance[idx] = temp;
+                prev[idx] = short_i;
             }
         }
     }
 
-    i = getNodeID(graph, end);
-    int w = dist[i];
-    return w;
+    i = getNodeID(g, dest);
+    int shortest = distance[i];
+    return shortest;
    
 }
-
 
 
 
