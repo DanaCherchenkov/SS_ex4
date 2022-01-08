@@ -387,85 +387,88 @@ void S(char *arr,Graph *g){
 }
 
 ////////////////////////////////////////////////////
-void to_start(char *list, int len, Node *s) {
-    char cnt[len];
-    strcpy(cnt, list);
+void reverse(char *arr, int size, Node *src) {
+    char temp[size];
+    strcpy(temp, arr);
     int j=2;
-    for (int i = 1; i <len; i++) {
-        list[j] = cnt[i];
+    int i;
+    for (i = 1; i < size; i++) {
+        arr[j] = temp[i];
         j++;
     }
-    list[1]=s->node_num;
+    arr[1]=src->node_num;
 
 }
 ////////////////////////////////////////////////////
-int tsp(Graph *graph, char list [], int len){
-    if (len==1||len==0){
+int tsp(Graph *g, char *list_of_node, int size){
+    if (size==1 || size==0){
         return -1;
     }
-    if (len==2){
+    if (size==2){
         return -1;
     }
-    int w=0;
-    for(int d=1; d<len-1; d++) {
-        Node *save_id1;
-        for (int i = 0; i < graph->size_all_nodes; ++i) {
-            if (graph->node_ID[i]->node_num == list[d]) {
-                save_id1 = graph->node_ID[i];
+
+    int w1 = 0;
+    for(int d=1; d<size-1; d++) {
+        Node *node1;
+        for (int i = 0; i < g->size_all_nodes; ++i) {
+            if (g->node_ID[i]->node_num == list_of_node[d]) {
+                node1 = g->node_ID[i];
             }
         }
-        Node *save_id2;
-        for (int i = 0; i < graph->size_all_nodes; ++i) {
-            if (graph->node_ID[i]->node_num == list[d + 1]) {
-                save_id2 = graph->node_ID[i];
+        Node *node2;
+        for (int i = 0; i < g->size_all_nodes; ++i) {
+            if (g->node_ID[i]->node_num == list_of_node[d + 1]) {
+                node2 = g->node_ID[i];
             }
         }
-        if(save_id1->size_close_nodes>0) {
-            w += Dijsktra(graph, save_id1, save_id2);
+        if(node1->size_close_nodes>0) {
+            w1 += Dijsktra(g, node1, node2);
         }
         else{
-            w += Dijsktra(graph, save_id2, save_id1);
+            w1 += Dijsktra(g, node2, node1);
         }
     }
-    if (w<10){
-        return w;
-    }else {
+    if (w1 < 10){
+        return w1;
+    }
+    else {
 
-        for (int i = 0; i < len; ++i) {
-            Node *s;
-            for (int i = 0; i < graph->size_all_nodes; ++i) {
-                if (graph->node_ID[i]->node_num == list[len-1]) {
-                    s = graph->node_ID[i];
-                    to_start(list,len,s);
+        for (int i = 0; i < size; ++i) {
+            // Node *s;
+            for (int i = 0; i < g->size_all_nodes; ++i) {
+                if (list_of_node[size-1] == g->node_ID[i]->node_num ) {
+                    Node *n = g->node_ID[i];
+                    reverse(list_of_node,size,n);
 
                 }
 
             }
         }
 
-        int z=0;
-        for(int d=1; d<len-1; d++) {
-            Node *save_id1;
-            for (int i = 0; i < graph->size_all_nodes; ++i) {
-                if (graph->node_ID[i]->node_num == list[d]) {
-                    save_id1 = graph->node_ID[i];
+        int w2=0;
+        for(int j=1; j<size-1; j++) {
+            Node *node1;
+            for (int i = 0; i < g->size_all_nodes; ++i) {
+                if ( list_of_node[j] == g->node_ID[i]->node_num) {
+                    node1 = g->node_ID[i];
                 }
             }
-            Node *save_id2;
-            for (int i = 0; i < graph->size_all_nodes; ++i) {
-                if (graph->node_ID[i]->node_num == list[d + 1]) {
-                    save_id2 = graph->node_ID[i];
+            Node *node2;
+            for (int i = 0; i < g->size_all_nodes; ++i) {
+                if (g->node_ID[i]->node_num == list_of_node[j + 1]) {
+                    node2 = g->node_ID[i];
                 }
             }
-                z += Dijsktra(graph, save_id1, save_id2);
+                w2 += Dijsktra(g, node1, node2);
 
         }
 
-        if(z>=1000){
+        if(w2 >= 1000){
             return -1;
         }
 
-        return z;
+        return w2;
     }
 
 
@@ -473,9 +476,10 @@ int tsp(Graph *graph, char list [], int len){
 
 
 //////////////////////////////////////////////
-void T(char ans [],Graph *graph){
-    printf( "TSP shortest path: %d \n", tsp(graph,ans, strlen(ans)));
+void T(char *ans,Graph *g){
+    printf( "TSP shortest path: %d \n", tsp(g,ans, strlen(ans)));
 }
+
 
 char* replace(char arr[] , int len, int index,char *str){
     int i = index;
