@@ -51,7 +51,7 @@ This function will add an edge from the source node to the destination node, and
 */
 void insert_edge(Node *src, Node *dest, double weight) {
     
-    src->weight = realloc(src->weight, (src->size_close_nodes + 1) * sizeof(double));
+    src->weight = (double *)realloc(src->weight, (src->size_close_nodes + 1) * sizeof(double));
     if(src->weight == NULL){
         exit(1);
     }
@@ -63,7 +63,7 @@ void insert_edge(Node *src, Node *dest, double weight) {
 
     src->close_nodes[src->size_close_nodes] = dest;
     src->weight[src->size_close_nodes] = weight;
-    src->size_close_nodes++;
+    src->size_close_nodes += 1;
 }
 
 /* 
@@ -155,46 +155,47 @@ void insert_node(Graph *g, Node *new_node) {
 /*
 This function will delet the node from the grapg, and will remove the all our edges of this spisific node.
 */
-void remove_node(Graph *G, Node *node) {
-    Node *curr;
-    for (int i = 0; i < G->size_all_nodes; i++) {
-        for(int j = 0; j < G->size_all_nodes; j++){
-            curr = G->node_ID[i];
-            if (curr->node_num != node->node_num) {
-                G->node_ID[j] = curr;
-            }
-            else{
-                free(curr->weight);    
-                free(curr->close_nodes);
-                
+void remove_node(Graph *g, Node *node) {
+    int j=0;
+    int i;
+    for (i = 0; i <g->size_all_nodes; i++) {
+        if (g->node_ID[i]->node_num != node->node_num) {
+                g->node_ID[j] = g->node_ID[i];
+                j++;
+        }else{
+            free(g->node_ID[i]->close_nodes);
+            free(g->node_ID[i]->weight);    
+        }    
+    }
+    g->node_ID = (Node **) realloc(g->node_ID, (g->size_all_nodes - 1) * sizeof(Node *));
+    if(g->node_ID == NULL){
+        exit(1);
+    }
+    g->size_all_nodes -= 1;
+    for (int i = 0; i  < g->size_all_nodes; i++){
+        for (int j = 0; j <g->node_ID[i]->size_close_nodes; j++){
+            if(g->node_ID[i]->close_nodes[j]->node_num == node->node_num){
+                remove_edge(g,g->node_ID[i],node);
             }
         }
     }
 
-    if((Node **) realloc(G->node_ID, (G->size_all_nodes - 1) * sizeof(Node *)) == NULL){
-        exit(1);
-    }
-    G->size_all_nodes--;
-    for (int i = 0; i < G->size_all_nodes; i++){
-        Node *n =G->node_ID[i];
-        for (int j = 0; j < G->node_ID[i]->size_close_nodes; j++){
-            if(n->close_nodes[j]->node_num == node->node_num){
-                remove_edge(G, n, node);
-            }
-        }
-    }
 }
 
 /*
 This function return the index number of the node in the list.
 */
 int getNodeID(Graph *G, Node *node) {
-    for(int i = 0; i < G->size_all_nodes; i++) {
-        if(G->node_ID[i]->node_num == node->node_num) {
+    int i;
+    Node *n;
+    for(i = 0; i < G->size_all_nodes; i++) {
+        n = G->node_ID[i];
+        if(n->node_num == node->node_num) {
             return i;
         }
     }
-    printf("In index: %c\n", node->node_num);
+    printf("id : %c\n", node->node_num);
+    printf("Invalid id detected.\n");
     return -1;
 }
 
@@ -237,7 +238,7 @@ int Dijsktra(Graph *graph, Node *start, Node *end) {
         visit[shortest_indx] = 1;
         n_visit += 1;
 
-        if(sameNodes(cur, end)) {
+        if(cur == end && cur->node_num == end->node_num){
             break;
         }
 
@@ -375,7 +376,7 @@ void S(char ans [],Graph *graph){
             dest=graph->node_ID[i];
         }
     }
-    printf("Dijsktra shortest path: %d \n", Dijsktra(graph, src, dest));
+    printf("Dijsktra shortest path: %d ", Dijsktra(graph, src, dest));
     
 }
 
@@ -479,6 +480,7 @@ char* replace(char *arr,char *str , int len, int index){
     str[len]='\0';
     return str;
 }
+
 
 int main(){
 
