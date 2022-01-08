@@ -173,9 +173,10 @@ void remove_node(Graph *g, Node *node) {
     }
     g->size_all_nodes -= 1;
     for (int i = 0; i  < g->size_all_nodes; i++){
+         Node *s =g->node_ID[i];
         for (int j = 0; j <g->node_ID[i]->size_close_nodes; j++){
-            if(g->node_ID[i]->close_nodes[j]->node_num == node->node_num){
-                remove_edge(g,g->node_ID[i],node);
+            if(s->close_nodes[j]->node_num == node->node_num){
+                remove_edge(g,s,node);
             }
         }
     }
