@@ -309,9 +309,8 @@ void B(char *arr,Graph *graph){
             if(graph->node_ID[i]->close_nodes==NULL){
                 exit(1);
             }
-            double *w = graph->node_ID[i]->weight;
-            w = (double *) malloc(graph->node_ID[i]->size_close_nodes * sizeof(double));
-            if(w == NULL){
+            graph->node_ID[i]->weight = (double *) malloc(graph->node_ID[i]->size_close_nodes * sizeof(double));
+            if(graph->node_ID[i]->weight == NULL){
                 exit(1);
             }
             Node *src;
