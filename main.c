@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "graph.c"
-// #include "graph.h"
 
 
 char* replace(char *arr , int len, int index,char *str){
