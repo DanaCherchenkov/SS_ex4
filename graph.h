@@ -1,5 +1,4 @@
-// #ifndef GRAPH_
-// #define GRAPH_
+
 
 typedef struct node_ {
     char node_num;
@@ -31,7 +30,3 @@ void reverse(char *arr, int size, Node *src);
 int findpath(Graph *g, char *list_of_node, int size)
 int tsp(Graph *g, char *list_of_node, int size);
 void TSP_cmd(char *ans,Graph *g);
-// char* replace(char *arr , int len, int index,char *str);
-// int main();
-
-// #endif
